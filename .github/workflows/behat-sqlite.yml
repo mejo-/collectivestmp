@@ -67,7 +67,7 @@ jobs:
         with:
           repository: nextcloud/circles
           path: apps/circles
-          ref: ${{ matrix.server-versions }}
+          ref: fix/circle_config_synchron
 
       - name: Checkout app
         uses: actions/checkout@v3
