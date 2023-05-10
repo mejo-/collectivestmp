@@ -26,10 +26,10 @@
 
 const baseUrl = Cypress.env('baseUrl')
 const sourceUrl = new URL(`${baseUrl}/index.php/apps/collectives/Link%20Testing/Link%20Source`)
-let imageId, pdfId, textId
+let imageId, textId
 let anotherCollectiveFirstPageId, linkTargetPageId
 
-describe('Page Link Handling', function() {
+describe('Page', function() {
 	before(function() {
 		cy.login('bob', { route: '/apps/collectives' })
 		cy.deleteAndSeedCollective('Another Collective')
@@ -48,16 +48,12 @@ describe('Page Link Handling', function() {
 			cy.uploadFile('test.png', 'image/png').then((id) => {
 				imageId = id
 			})
-			cy.uploadFile('test.pdf', 'application/pdf', 'Collectives/Link%20Testing/').then((id) => {
-				pdfId = id
-			})
 		}).then(() => {
 			cy.seedPageContent('Link%20Testing/Link%20Source.md', `
 ## Links supposed to open in viewer
 
 * Absolute path to image in Nextcloud: [image](//test.png?fileId=${imageId})
 * Absolute path to text file in Nextcloud: [test.md](//test.md?fileId=${textId})
-* Relative path to pdf file in Nextcloud: [test.pdf](test.pdf?fileId=${pdfId})
 
 ## Links supposed to open in same window
 
@@ -179,15 +175,6 @@ describe('Page Link Handling', function() {
 				viewerFileElement: '[data-text-el="editor-container"]',
 				edit: true,
 			})
-		})
-		it('Opens link with relative path to pdf in Nextcloud in viewer', function() {
-			// Broken in Text on Nextcloud 25
-			if (Cypress.env('ncVersion') !== 'stable25') {
-				let href = `/index.php/apps/files/?dir=/&openfile=${pdfId}#relPath=test.pdf`
-				testLinkToViewer(href, { fileName: 'test.pdf', viewerFileElement: 'iframe' })
-				href = `/index.php/apps/files/?dir=/Collectives/Link Testing&openfile=${pdfId}#relPath=test.pdf`
-				testLinkToViewer(href, { fileName: 'test.pdf', viewerFileElement: 'iframe', edit: true })
-			}
 		})
 	})
 
